@@ -41,9 +41,13 @@ public class RequestVoteResponseEventListener implements BaseListener<RequestVot
             return;
         }
 
-        if (this.clusterState.isCandidate()) {
+        if (this.clusterState.isCandidate()
+          || this.clusterState.isLeader()) { // a candidate might already transition to leader, in that just just register the node
             this.clusterState.registerVote(raftNode, requestVoteResponse.isVoteGranted());
+        }
 
+        // transition to leader only if current state is a leader
+        if (this.clusterState.isCandidate()) {
             if (this.clusterState.acquiredMajorityVoteToBecomeLeader()) {
                 this.clusterState.transitionToLeader();
             }

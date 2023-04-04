@@ -36,7 +36,7 @@ public class AppendEntryResponseEventListener implements BaseListener<AppendEntr
 
         termHandler(appendEntryResponse);
 
-        log.debug("handling append entry response " + appendEntryResponse + " originator " + originator);
+        // log.info("handling append entry response " + appendEntryResponse + " originator " + originator);
 
         // only leader receives append entry response
         if (!this.clusterState.isLeader()) {

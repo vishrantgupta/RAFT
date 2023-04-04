@@ -34,16 +34,6 @@ class VolatileState implements RaftState {
         reset();
     }
 
-    public void decrementFollowerNextIndex(String nodeId) {
-
-        if (this.getFollowersNextIndex().get(nodeId) > 1) {
-            // append failed try with a smaller index
-            log.debug("reducing the next index for node " + nodeId);
-            this.getFollowersNextIndex().merge(nodeId, -1, Integer::sum);
-        }
-
-    }
-
     public int getCommitIndex() {
         return this.commitIndex.get();
     }
@@ -61,7 +51,7 @@ class VolatileState implements RaftState {
     }
 
     public void incrementLastApplied() {
-        this.lastApplied.incrementAndGet();
+        this.lastApplied.set(this.getLastApplied() + 1);
     }
 
     @Override

@@ -79,6 +79,8 @@ public class WebsocketNetwork implements Network {
                 } catch (Exception e) {
                     log.error("error while sending message to node " + node, e);
                 }
+            } else {
+                log.warn("session is close for node " + node);
             }
         });
     }
@@ -110,6 +112,12 @@ public class WebsocketNetwork implements Network {
 
     @Override
     public void sendTo(NetworkMessage message) {
-        sessions.get(message.getDestination()).getAsyncRemote().sendObject(message);
+
+        if (sessions.get(message.getDestination()) != null && sessions.get(message.getDestination()).isOpen()) {
+            sessions.get(message.getDestination()).getAsyncRemote().sendObject(message);
+        } else {
+            log.debug("Could not send the message to " + message.getDestination());
+        }
+
     }
 }

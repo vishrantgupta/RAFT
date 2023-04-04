@@ -33,7 +33,7 @@ public class ElectionSchedule {
     @Scheduled(fixedDelay = 5, initialDelay = 3, timeUnit = TimeUnit.SECONDS)
     public void election() {
 
-        if (this.clusterState.getRole() != RaftRole.LEADER) {
+        if (this.clusterState.getCurrentRole() != RaftRole.LEADER) {
             if (!this.clusterState.isLeaderAlive()) {
 
                 log.debug("calling for election...");

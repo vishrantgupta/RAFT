@@ -32,4 +32,9 @@ public class KeyValueModel implements Serializable {
     @Valid
     private String value;
 
+    @JsonProperty("cmd")
+    @NotNull
+    @Valid
+    private String cmd;
+
 }

@@ -43,7 +43,7 @@ public class RequestVoteEventListener implements BaseListener<RequestVoteEvent> 
         Entry<RequestVote, Node> entry = (Entry<RequestVote, Node>) event.getSource();
 
         RequestVote requestVote = entry.getKey();
-        Node raftNode = entry.getValue();
+        Node candidateNode = entry.getValue();
 
         termHandler(requestVote);
 
@@ -72,7 +72,7 @@ public class RequestVoteEventListener implements BaseListener<RequestVoteEvent> 
         NetworkMessage message = NetworkMessage.builder()
           .requestVoteResponse(requestVoteResponse)
           .messageType(MessageType.REQUEST_VOTE_RESPONSE)
-          .destination(raftNode)
+          .destination(candidateNode)
           .source(config.getCurrentNodeConfig())
           .build();
 

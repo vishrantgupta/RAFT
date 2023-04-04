@@ -11,18 +11,8 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class AppendEntryResponse extends RaftMessage {
 
-    boolean success;
+    private boolean success;
 
     private int matchIndex;
-
-    // public String toString() {
-    //     Gson gson = new Gson();
-    //     return gson.toJson(this);
-    // }
-    //
-    // public static AppendEntryResponse fromString(String str) {
-    //     Gson gson = new Gson();
-    //     return gson.fromJson(str, AppendEntryResponse.class);
-    // }
 
 }

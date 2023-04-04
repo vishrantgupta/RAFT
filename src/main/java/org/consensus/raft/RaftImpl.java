@@ -28,7 +28,7 @@ public class RaftImpl implements Consensus {
 
         if (!this.clusterState.isLeader()) {
             System.out.println("not a leader");
-            throw new RaftException("not a leater, can only append when the state is " + RaftRole.LEADER.name() + ", current state is " + this.clusterState.getRole().name());
+            throw new RaftException("not a leater, can only append when the state is " + RaftRole.LEADER.name() + ", current state is " + this.clusterState.getCurrentRole().name());
         }
 
         LogEntry logEntry = new LogEntry(this.clusterState.getCurrentTerm(), command);
@@ -44,9 +44,9 @@ public class RaftImpl implements Consensus {
           .build();
 
         // this should always work as it's happening on leader
-        this.clusterState.appendEntry(entry);
+        boolean leaderAppended = this.clusterState.appendEntry(entry);
 
-        System.out.println("waiting for consensus");
+        System.out.println("Appended on leader " + leaderAppended + " waiting for consensus");
 
         while (this.clusterState.getCommitIndex() > previousLogIndex + 1) {
             // wait

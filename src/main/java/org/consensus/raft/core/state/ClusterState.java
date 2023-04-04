@@ -12,7 +12,7 @@ public interface ClusterState {
 
     boolean appendEntry(AppendEntry appendEntry);
 
-    void applyCommittedIndex(int untilIndex);
+    void applyCommittedIndex(int leaderCommitIndex);
 
     boolean canAppendLogEntryGivenTerm(int leaderTerm);
 
@@ -38,7 +38,7 @@ public interface ClusterState {
 
     DiskPersistedState getPersistedState();
 
-    RaftRole getRole();
+    RaftRole getCurrentRole();
 
     VolatileState getVolatileState();
 

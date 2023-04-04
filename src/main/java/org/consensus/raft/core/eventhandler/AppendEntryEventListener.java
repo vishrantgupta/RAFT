@@ -44,18 +44,18 @@ public class AppendEntryEventListener implements BaseListener<AppendEntryEvent> 
         Entry<AppendEntry, Node> entry = (Entry<AppendEntry, Node>) event.getSource();
 
         AppendEntry appendEntry = entry.getKey();
-        Node raftNode = entry.getValue();
+        Node leaderNode = entry.getValue();
 
         log.debug("handling append entry " + appendEntry);
 
         termHandler(appendEntry);
 
+        clusterState.setLeaderActive();
+
         // only follower receives the appends entry
         if (!this.clusterState.isFollower()) {
-            throw new RaftException("only follower appends the entry, current state is " + this.clusterState.getRole().name());
+            throw new RaftException("only follower appends the entry, current state is " + this.clusterState.getCurrentRole().name());
         }
-
-        clusterState.setLeaderActive();
 
         if (!this.clusterState.canAppendLogEntryGivenTerm(appendEntry.getCurrentTerm())) {
             return;
@@ -78,7 +78,7 @@ public class AppendEntryEventListener implements BaseListener<AppendEntryEvent> 
         network.sendTo(NetworkMessage.builder()
           .appendEntryResponse(appendEntryResponse)
           .messageType(MessageType.APPEND_ENTRY_RESPONSE)
-          .destination(raftNode)
+          .destination(leaderNode)
           .source(config.getCurrentNodeConfig())
           .build());
 

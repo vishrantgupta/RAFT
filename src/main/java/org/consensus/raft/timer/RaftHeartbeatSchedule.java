@@ -31,7 +31,7 @@ public class RaftHeartbeatSchedule {
     @Scheduled(fixedDelay = 50)
     public void heartbeat() {
         // the update to followers only happens from the leader
-        if (this.clusterState.getRole() == RaftRole.LEADER) {
+        if (this.clusterState.getCurrentRole() == RaftRole.LEADER) {
 
             for (Node followerNode : this.config.otherNodes()) {
 
@@ -43,7 +43,8 @@ public class RaftHeartbeatSchedule {
                 AppendEntry entry = AppendEntry.builder()
                   .currentTerm(this.clusterState.getCurrentTerm())
                   .leaderId(this.config.getCurrentNodeConfig().getId())
-                  .prevLogIndex(prevLogIndex).prevLogTerm(prevLogTerm)
+                  .prevLogIndex(prevLogIndex)
+                  .prevLogTerm(prevLogTerm)
                   .leaderCommitIndex(this.clusterState.getCommitIndex())
                   .entries(logEntries.toArray(new LogEntry[logEntries.size()]))
                   .build();

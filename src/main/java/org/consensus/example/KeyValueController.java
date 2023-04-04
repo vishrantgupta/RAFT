@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class KeyValueController implements KeyValueApi {
 
     private final Consensus consensus;
-    private KeyValueStore store;
+    private final KeyValueStore store;
 
     @Autowired
     public KeyValueController(KeyValueStore store, Consensus consensus) {
