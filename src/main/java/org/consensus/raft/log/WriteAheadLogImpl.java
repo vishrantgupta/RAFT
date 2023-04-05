@@ -16,41 +16,6 @@ public class WriteAheadLogImpl extends LinkedList<LogEntry> implements WriteAhea
         this.add(firstEntry);
     }
 
-    // public boolean appendEntries(int prevIndex, int prevTerm, List<LogEntry> entries, LogEntry... log) {
-    //     assert log.size() > 0 : "append_entries on empty log";
-    //     assert prevIndex >= 0 : "my programming error";
-    //
-    //     // The log is not allowed to have holes in it.  (Raft)
-    //     if (prevIndex >= log.size()) {
-    //         return false;
-    //     }
-    //
-    //     // The terms have to match
-    //     if (log.get(prevIndex).term != prevTerm) {
-    //         return false;
-    //     }
-    //
-    //     if (entries != null && !entries.isEmpty()) {
-    //         int n = prevIndex + 1;
-    //         for (LogEntry entry : entries) {
-    //             if (n < log.size() && log.get(n).term != entry.term) {
-    //                 log.subList(n, log.size()).clear();
-    //                 break;
-    //             }
-    //             n++;
-    //         }
-    //         log.subList(prevIndex + 1, prevIndex + 1 + entries.size()).clear();
-    //         log.addAll(prevIndex + 1, entries);
-    //     }
-    //
-    //     List<LogEntry> sortedLog = new ArrayList<>(log);
-    //     sortedLog.sort((e1, e2) -> Integer.compare(e1.term, e2.term));
-    //     assert sortedLog.equals(log);
-    //
-    //     return true;
-    // }
-
-
     @Override
     public boolean appendLogEntry(int leaderPreviousIndex, int leaderPreviousTerm, LogEntry... logEntries) {
 
@@ -89,21 +54,6 @@ public class WriteAheadLogImpl extends LinkedList<LogEntry> implements WriteAhea
             // append
             return this.addAll(appendAtIndex, List.of(logEntries));
         }
-
-        // // if (logEntries != null && logEntries.length > 0) {
-        // //
-        // //     int appendAtIndex = leaderPreviousIndex + 1;
-        // //
-        // //     for (LogEntry entry : logEntries) {
-        // //         if (appendAtIndex < this.size() && this.get(appendAtIndex).getTerm() != entry.getTerm()) {
-        // //             this.subList(appendAtIndex, this.size()).clear();
-        // //             break;
-        // //         }
-        // //         appendAtIndex++;
-        // //     }
-        // //     this.subList(leaderPreviousIndex + 1, leaderPreviousIndex + 1 + logEntries.length).clear();
-        // //     this.addAll(leaderPreviousIndex + 1, List.of(logEntries));
-        // // }
 
         // the heart beat could send empty log entries; in that case just return true
         return true;

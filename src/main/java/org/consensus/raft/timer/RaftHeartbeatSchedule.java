@@ -28,7 +28,7 @@ public class RaftHeartbeatSchedule {
         this.clusterState = clusterState;
     }
 
-    @Scheduled(fixedDelay = 50)
+    @Scheduled(fixedDelay = 250)
     public void heartbeat() {
         // the update to followers only happens from the leader
         if (this.clusterState.getCurrentRole() == RaftRole.LEADER) {

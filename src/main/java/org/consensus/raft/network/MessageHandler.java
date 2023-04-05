@@ -63,7 +63,7 @@ public class MessageHandler {
             return;
         }
 
-        // log.info("handling message of type " + message.getMessageType() + " from node " + message.getSource());
+        log.debug("handling message of type " + message.getMessageType() + " from node " + message.getSource());
 
         switch (message.getMessageType()) {
             // should be received by follower

@@ -2,6 +2,7 @@ raft:
   connectionTimeoutMillis: 1000
   electionTimeoutMillis: 500
   heartbeatIntervalMillis: 50
+  consensusTimeoutMillis: 100
   nodes:
   - id: node-0
     ipAddress: localhost
@@ -22,3 +23,6 @@ raft:
 # randomly select the port
 server:
   port: 0
+logging:
+  level:
+    org.consensus: ERROR

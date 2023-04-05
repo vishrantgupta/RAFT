@@ -40,6 +40,9 @@ public class RaftConfig {
     // @Value("${raft.connectionTimeoutMillis:1000}")
     private int connectionTimeoutMillis;
 
+    // @Value("${raft.consensusTimeoutMillis:100}")
+    private int consensusTimeoutMillis;
+
     public Node getCurrentNodeConfig() {
         for (Node node : nodes) {
             if (node.getId().equals(nodeId)) {

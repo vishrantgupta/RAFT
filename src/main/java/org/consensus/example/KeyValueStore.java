@@ -2,10 +2,12 @@ package org.consensus.example;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.consensus.raft.ApplicationCallback;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class KeyValueStore implements ApplicationCallback {
 
     private final Map<String, String> cache = new HashMap<>();
@@ -16,23 +18,23 @@ public class KeyValueStore implements ApplicationCallback {
         KeyValueModel command = (KeyValueModel) o;
 
         if (command == null || command.getCmd() == null || command.getCmd().isEmpty()) {
-            System.out.println("command cannot be empty");
+            log.warn("command cannot be empty");
             return;
         }
 
         switch (command.getCmd().toLowerCase()) {
             case "set" -> {
                 this.put(command.getKey(), command.getValue());
-                System.out.println("ok");
+                // System.out.println("ok");
             }
             case "get" -> {
-                System.out.println(this.get(command.getKey()));
+                log.debug(this.get(command.getKey()));
             }
             case "delete" -> {
                 this.delete(command.getKey());
-                System.out.println("deleted");
+                // System.out.println("deleted");
             }
-            default -> System.out.println("invalid command");
+            default -> log.error("invalid command");
         }
     }
 
@@ -50,6 +52,6 @@ public class KeyValueStore implements ApplicationCallback {
 
     public void put(String key, String value) {
         cache.put(key, value);
-        System.out.println(cache);
+        // System.out.println(cache);
     }
 }
