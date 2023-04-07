@@ -17,7 +17,7 @@ public class WriteAheadLogImpl extends LinkedList<LogEntry> implements WriteAhea
     }
 
     @Override
-    public boolean appendLogEntry(int leaderPreviousIndex, int leaderPreviousTerm, LogEntry... logEntries) {
+    public boolean appendLogEntry(int leaderPreviousIndex, int leaderPreviousTerm, List<LogEntry> logEntries) {
 
         // the follower is lagging behind; and this condition makes sure there are no holes in the log
         if (leaderPreviousIndex >= this.size()) {
@@ -33,14 +33,14 @@ public class WriteAheadLogImpl extends LinkedList<LogEntry> implements WriteAhea
             return false;
         }
 
-        if (logEntries != null && logEntries.length > 0) {
+        if (logEntries != null && !logEntries.isEmpty()) {
 
             int appendAtIndex = leaderPreviousIndex + 1;
 
-            log.debug("appending at index " + appendAtIndex);
+            log.debug("Appending at index " + appendAtIndex);
 
             // removing the number of entries that were in this append entry; this situation can occur when a duplicate message may arrive at a later stage; could be a result of slow network
-            int entriesToRemove = logEntries.length - appendAtIndex - 1;
+            int entriesToRemove = logEntries.size() - appendAtIndex - 1;
 
             ListIterator<LogEntry> itr = this.listIterator(appendAtIndex);
             while (entriesToRemove != 0 && itr.hasNext()) {
@@ -52,7 +52,7 @@ public class WriteAheadLogImpl extends LinkedList<LogEntry> implements WriteAhea
             }
 
             // append
-            return this.addAll(appendAtIndex, List.of(logEntries));
+            return this.addAll(appendAtIndex, logEntries);
         }
 
         // the heart beat could send empty log entries; in that case just return true

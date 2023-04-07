@@ -1,12 +1,14 @@
 package org.consensus.example;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.consensus.raft.Consensus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 public class KeyValueController implements KeyValueApi {
 
     private final Consensus consensus;
@@ -20,6 +22,7 @@ public class KeyValueController implements KeyValueApi {
 
     @Override
     public ResponseEntity<String> createStream(KeyValueModel body) {
+
         this.consensus.getConsensus(body);
         this.store.apply(body);
 

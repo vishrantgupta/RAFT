@@ -46,7 +46,7 @@ public class RaftHeartbeatSchedule {
                   .prevLogIndex(prevLogIndex)
                   .prevLogTerm(prevLogTerm)
                   .leaderCommitIndex(this.clusterState.getCommitIndex())
-                  .entries(logEntries.toArray(new LogEntry[logEntries.size()]))
+                  .entries(logEntries)
                   .build();
 
                 network.broadcast(NetworkMessage.builder()

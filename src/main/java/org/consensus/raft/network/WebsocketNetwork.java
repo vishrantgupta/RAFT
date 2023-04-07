@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.consensus.raft.config.Node;
@@ -63,7 +61,7 @@ public class WebsocketNetwork implements Network {
     @Override
     public void broadcast(final NetworkMessage message) {
 
-        log.debug("sending message " + message);
+        // log.debug("sending message " + message);
 
         if (message == null) {
             return;
@@ -72,15 +70,13 @@ public class WebsocketNetwork implements Network {
         this.sessions.forEach((node, session) -> {
             if (session.isOpen()) {
                 message.setDestination(node);
-                Future<Void> future = session.getAsyncRemote().sendObject(message);
-
                 try {
-                    future.get(1, TimeUnit.SECONDS);
+                    session.getAsyncRemote().sendObject(message);
                 } catch (Exception e) {
-                    log.error("error while sending message to node " + node, e);
+                    log.warn("Error while sending message to node " + node, e);
                 }
             } else {
-                log.warn("session is close for node " + node);
+                log.warn("Session is close for node " + node);
             }
         });
     }

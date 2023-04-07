@@ -36,7 +36,7 @@ public class ElectionSchedule {
         if (this.clusterState.getCurrentRole() != RaftRole.LEADER) {
             if (!this.clusterState.isLeaderAlive()) {
 
-                log.debug("calling for election...");
+                log.debug("Calling for election...");
 
                 // assuming the leader is not alive
                 if (this.clusterState.transitionToCandidate()) {

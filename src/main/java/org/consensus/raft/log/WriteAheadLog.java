@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface WriteAheadLog<T> extends List<T>, Deque<T> {
 
-    boolean appendLogEntry(int leaderPreviousIndex, int leaderPreviousTerm, T... logEntries);
+    boolean appendLogEntry(int leaderPreviousIndex, int leaderPreviousTerm, List<LogEntry> logEntries);
 }

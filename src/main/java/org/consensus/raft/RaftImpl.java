@@ -1,5 +1,6 @@
 package org.consensus.raft;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.consensus.raft.bean.AppendEntry;
 import org.consensus.raft.config.RaftConfig;
@@ -29,9 +30,7 @@ public class RaftImpl implements Consensus {
     }
 
     @Override
-    public boolean getConsensus(Object command) {
-
-        log.debug("got a command " + command);
+    public synchronized boolean getConsensus(Object command) {
 
         if (!this.clusterState.isLeader()) {
             throw new RaftException("not a leater, can only append when the state is " + RaftRole.LEADER.name() + ", current state is " + this.clusterState.getCurrentRole().name());
@@ -46,7 +45,7 @@ public class RaftImpl implements Consensus {
           .leaderId(this.config.getCurrentNodeConfig().getId())
           .prevLogIndex(previousLogIndex).prevLogTerm(this.clusterState.getLastLogTerm())
           .leaderCommitIndex(this.clusterState.getCommitIndex())
-          .entries(new LogEntry[]{logEntry})
+          .entries(List.of(logEntry))
           .build();
 
         // this should always work as it's happening on leader
@@ -73,9 +72,7 @@ public class RaftImpl implements Consensus {
             // wait
         }
 
-        // store.apply(command);
-
-        log.debug("got the consensus for command " + command);
+        log.debug("Got the consensus for command " + command);
 
         return true;
     }

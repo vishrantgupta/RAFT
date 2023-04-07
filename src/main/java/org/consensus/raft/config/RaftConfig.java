@@ -26,7 +26,7 @@ public class RaftConfig {
     private int electionTimeoutMillis;
 
     // @Value("${raft.randomTimeoutMillis:2500}")
-    private int randomTimeoutMillis = 2500;
+    private int randomTimeoutMillis = 500;
 
     // @Value("${raft.nodes}")
     @NotNull

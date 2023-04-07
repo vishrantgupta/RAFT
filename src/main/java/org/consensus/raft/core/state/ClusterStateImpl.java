@@ -71,7 +71,7 @@ public class ClusterStateImpl implements ClusterState {
     }
 
     @Override
-    public boolean appendEntry(AppendEntry appendEntry) {
+    public synchronized boolean appendEntry(AppendEntry appendEntry) {
         return this.getPersistedState()
           .getLog()
           .appendLogEntry(appendEntry.getPrevLogIndex(), appendEntry.getPrevLogTerm(), appendEntry.getEntries());
@@ -81,13 +81,13 @@ public class ClusterStateImpl implements ClusterState {
     public synchronized void applyCommittedIndex(int leaderCommitIndex) {
         if (this.getVolatileState().getLastApplied() < leaderCommitIndex) {
 
-            log.debug("entries got committed applying from " + this.getVolatileState().getLastApplied() + " " + leaderCommitIndex);
+            log.debug("entries got committed applying from index " + this.getVolatileState().getLastApplied() + " to index " + leaderCommitIndex);
 
             ListIterator<LogEntry> itr = this.getPersistedState().getLog().listIterator(this.getVolatileState().getLastApplied() + 1);
 
             while (itr.hasNext()) {
                 Object command = itr.next().getCommand();
-                log.debug("apply command on follower " + command);
+                log.debug("applying command on follower " + command);
 
                 callback.apply(command);
                 this.getVolatileState().incrementLastApplied();
@@ -115,9 +115,8 @@ public class ClusterStateImpl implements ClusterState {
 
         if (this.getVolatileState().getFollowersNextIndex().get(follower.getId()) > 1) {
             // append failed try with a smaller index
-            log.info("reducing the next index for node " + follower.getId());
+            log.debug("reducing the next index for node " + follower.getId());
             this.getVolatileState().getFollowersNextIndex().merge(follower.getId(), -1, Integer::sum);
-            log.info("followers next index " + " follower " + follower + " -> " + this.getVolatileState().getFollowersNextIndex().get(follower.getId()));
         }
     }
 
@@ -262,12 +261,17 @@ public class ClusterStateImpl implements ClusterState {
     @Override
     public synchronized boolean transitionToLeader() {
 
+        if (this.currentRole == RaftRole.LEADER) {
+            log.warn("Duplicate request to promote to LEADER");
+            return true;
+        }
+
         if (this.currentRole != RaftRole.CANDIDATE) {
-            throw new RaftException("cannot be promoted to a leader as this is not in " + RaftRole.CANDIDATE.name() + " state");
+            throw new RaftException("current state is " + this.currentRole.name() + " cannot be promoted to LEADER");
         }
 
         if (this.persistedState.getVotedFor() != raftConfig.getCurrentNodeConfig()) {
-            log.warn("voted for someone else");
+            log.warn("Voted for someone else");
             return false;
         }
 

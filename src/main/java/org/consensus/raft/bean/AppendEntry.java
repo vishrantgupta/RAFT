@@ -1,5 +1,6 @@
 package org.consensus.raft.bean;
 
+import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,7 +35,7 @@ public class AppendEntry extends RaftMessage {
     private int leaderCommitIndex;
 
     @NotNull
-    private LogEntry[] entries;
+    private List<LogEntry> entries;
 
     // adding require id to add idempotent nature to append entry
     // private UUID requestId;

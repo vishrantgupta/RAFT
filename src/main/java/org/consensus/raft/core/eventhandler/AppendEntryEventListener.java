@@ -46,8 +46,6 @@ public class AppendEntryEventListener implements BaseListener<AppendEntryEvent> 
         AppendEntry appendEntry = entry.getKey();
         Node leaderNode = entry.getValue();
 
-        log.debug("handling append entry " + appendEntry);
-
         termHandler(appendEntry);
 
         clusterState.setLeaderActive();

@@ -59,11 +59,11 @@ public class MessageHandler {
     public void receive(NetworkMessage message) {
 
         if (message == null) {
-            log.warn("received a null message");
+            log.warn("Received a null message");
             return;
         }
 
-        log.debug("handling message of type " + message.getMessageType() + " from node " + message.getSource());
+        log.debug("Handling message of type " + message.getMessageType() + " from node " + message.getSource());
 
         switch (message.getMessageType()) {
             // should be received by follower
