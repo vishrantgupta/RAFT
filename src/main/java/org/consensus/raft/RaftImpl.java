@@ -33,7 +33,7 @@ public class RaftImpl implements Consensus {
     public synchronized boolean getConsensus(Object command) {
 
         if (!this.clusterState.isLeader()) {
-            throw new RaftException("not a leater, can only append when the state is " + RaftRole.LEADER.name() + ", current state is " + this.clusterState.getCurrentRole().name());
+            throw new RaftException("Not a leader, can only append when the state is " + RaftRole.LEADER.name() + ", current state is " + this.clusterState.getCurrentRole().name());
         }
 
         LogEntry logEntry = new LogEntry(this.clusterState.getCurrentTerm(), command);
@@ -52,29 +52,32 @@ public class RaftImpl implements Consensus {
         boolean leaderAppended = this.clusterState.appendEntry(entry);
 
         if (leaderAppended) {
+
             network.broadcast(NetworkMessage.builder()
               .appendEntry(entry)
               .messageType(MessageType.APPEND_ENTRY)
               .source(config.getCurrentNodeConfig())
               .build());
-        }
 
-        log.debug("Appended on leader " + leaderAppended + " waiting for consensus");
+            log.debug("Entry got appended on leader waiting for consensus");
 
-        long startTime = System.currentTimeMillis();
-        long timeout = config.getConsensusTimeoutMillis(); // 10 seconds in milliseconds
+            long startTime = System.currentTimeMillis();
+            long timeout = config.getConsensusTimeoutMillis(); // 10 seconds in milliseconds
 
-        while (this.clusterState.getCommitIndex() > previousLogIndex + 1) {
-            if (System.currentTimeMillis() - startTime > timeout) {
-                // timeout exceeded, do something
-                throw new RaftException("timed out waiting for consensus");
+            while (this.clusterState.getCommitIndex() > previousLogIndex + 1) {
+                if (System.currentTimeMillis() - startTime > timeout) {
+                    // timeout exceeded, do something
+                    throw new RaftException("timed out waiting for consensus");
+                }
+                // wait
             }
-            // wait
+
+            log.debug("Got the consensus for command " + command);
+
+            return true;
         }
 
-        log.debug("Got the consensus for command " + command);
-
-        return true;
+        return false;
     }
 
 }
