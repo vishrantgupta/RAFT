@@ -111,7 +111,7 @@ public class ClusterStateImpl implements ClusterState {
     }
 
     @Override
-    public void decrementFollowerNextIndex(Node follower) {
+    public synchronized void decrementFollowerNextIndex(Node follower) {
 
         if (this.getVolatileState().getFollowersNextIndex().get(follower.getId()) > 1) {
             // append failed try with a smaller index
@@ -121,8 +121,22 @@ public class ClusterStateImpl implements ClusterState {
     }
 
     @Override
-    public int getCommitIndex() {
+    public synchronized int getCommitIndex() {
         return getVolatileState().getCommitIndex();
+    }
+
+    @Override
+    public synchronized void setCommitIndex(int currentTerm) {
+        // updating the commit index
+        List<Integer> collection = new ArrayList<>(this.getVolatileState().getFollowersMatchIndex().values());
+        Collections.sort(collection);
+
+        // if committed on majority of the followers then update the commit index
+        int nextCommitIndex = collection.get(this.raftConfig.getNodes().size() / 2);
+        if (this.getVolatileState().getCommitIndex() < nextCommitIndex
+          && this.getPersistedState().getCurrentTerm() == currentTerm) { // the server is allowed to commit only if the leader is in it's current term (slide page 132 Raft paper figure 8)
+            this.getVolatileState().setCommitIndex(nextCommitIndex);
+        }
     }
 
     public synchronized RaftRole getCurrentRole() {
@@ -130,12 +144,12 @@ public class ClusterStateImpl implements ClusterState {
     }
 
     @Override
-    public int getCurrentTerm() {
+    public synchronized int getCurrentTerm() {
         return this.getPersistedState().getCurrentTerm();
     }
 
     @Override
-    public List<LogEntry> getFollowerLogEntries(Node followerNode) {
+    public synchronized List<LogEntry> getFollowerLogEntries(Node followerNode) {
 
         // *expected* next log index of follower
         int followerNextLogIdx = this.getFollowerNextIndexByNodeId(followerNode);
@@ -152,38 +166,38 @@ public class ClusterStateImpl implements ClusterState {
     }
 
     @Override
-    public int getFollowerNextIndexByNodeId(Node followerNode) {
+    public synchronized int getFollowerNextIndexByNodeId(Node followerNode) {
         return getVolatileState().getFollowerNextIndexByNodeId(followerNode.getId());
     }
 
     @Override
-    public int getLastLogIndex() {
+    public synchronized int getLastLogIndex() {
         return this.getPersistedState().getLog().size() - 1;
     }
 
     @Override
-    public int getLastLogTerm() {
+    public synchronized int getLastLogTerm() {
         return this.getPersistedState().getLog().getLast().getTerm();
     }
 
     @Override
-    public int getLogTermByIndex(int index) {
+    public synchronized int getLogTermByIndex(int index) {
         return getPersistedState().getLog().get(index).getTerm();
     }
 
     @Override
-    public int getMatchIndex() {
+    public synchronized int getMatchIndex() {
         return this.getPersistedState().getLog().size() - 1;
+    }
+
+    @Override
+    public synchronized Node getVotedFor() {
+        return this.getPersistedState().getVotedFor();
     }
 
     @Override
     public synchronized boolean isCandidate() {
         return this.currentRole == RaftRole.CANDIDATE;
-    }
-
-    @Override
-    public Node getVotedFor() {
-        return this.getPersistedState().getVotedFor();
     }
 
     @Override
@@ -194,20 +208,6 @@ public class ClusterStateImpl implements ClusterState {
     @Override
     public synchronized boolean isLeader() {
         return this.currentRole == RaftRole.LEADER;
-    }
-
-    @Override
-    public void setCommitIndex(int currentTerm) {
-        // updating the commit index
-        List<Integer> collection = new ArrayList<>(this.getVolatileState().getFollowersMatchIndex().values());
-        Collections.sort(collection);
-
-        // if committed on majority of the followers then update the commit index
-        int nextCommitIndex = collection.get(this.raftConfig.getNodes().size() / 2);
-        if (this.getVolatileState().getCommitIndex() < nextCommitIndex
-          && this.getPersistedState().getCurrentTerm() == currentTerm) { // the server is allowed to commit only if the leader is in it's current term (slide page 132 Raft paper figure 8)
-            this.getVolatileState().setCommitIndex(nextCommitIndex);
-        }
     }
 
     @Override
@@ -296,22 +296,22 @@ public class ClusterStateImpl implements ClusterState {
     }
 
     @Override
-    public void updateCurrentTerm(int currentTerm) {
+    public synchronized void updateCurrentTerm(int currentTerm) {
         getPersistedState().setCurrentTerm(currentTerm);
     }
 
     @Override
-    public void updateFollowersMatchIndex(Node follower, int matchIndex) {
+    public synchronized void updateFollowersMatchIndex(Node follower, int matchIndex) {
         this.getVolatileState().updateFollowersMatchIndex(follower.getId(), Math.max(this.volatileState.getFollowersMatchIndex().get(follower.getId()), matchIndex));
     }
 
     @Override
-    public void updateFollowersNextIndex(Node follower, int matchIndex) {
+    public synchronized void updateFollowersNextIndex(Node follower, int matchIndex) {
         this.getVolatileState().updateFollowersNextIndex(follower.getId(), matchIndex + 1);
     }
 
     @Override
-    public void updateVotedFor(Node voteFor) {
+    public synchronized void updateVotedFor(Node voteFor) {
         getPersistedState().setVotedFor(voteFor);
     }
 
