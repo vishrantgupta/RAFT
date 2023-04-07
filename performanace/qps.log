@@ -1,0 +1,159 @@
+~/raft/performanace (main)* | python3 qps_test.py
+This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 1500 requests
+Completed 3000 requests
+Completed 4500 requests
+Completed 6000 requests
+Completed 7500 requests
+Completed 9000 requests
+Completed 10500 requests
+Completed 12000 requests
+Completed 13500 requests
+Completed 15000 requests
+Finished 15000 requests
+
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            15000
+
+Document Path:          /v1/store
+Document Length:        2 bytes
+
+Concurrency Level:      100
+Time taken for tests:   5.282 seconds
+Complete requests:      15000
+Failed requests:        0
+Total transferred:      1890000 bytes
+Total body sent:        2835000
+HTML transferred:       30000 bytes
+Requests per second:    2839.86 [#/sec] (mean)
+Time per request:       35.213 [ms] (mean)
+Time per request:       0.352 [ms] (mean, across all concurrent requests)
+Transfer rate:          349.44 [Kbytes/sec] received
+                        524.15 kb/s sent
+                        873.59 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.7      0      21
+Processing:     1   35  26.9     32     175
+Waiting:        1   35  26.8     32     173
+Total:          1   35  26.9     32     175
+
+Percentage of the requests served within a certain time (ms)
+  50%     32
+  66%     43
+  75%     50
+  80%     53
+  90%     62
+  95%     69
+  98%    129
+  99%    154
+ 100%    175 (longest request)
+Percentage served,Time in ms
+0,0.779
+1,0.926
+2,0.995
+3,1.151
+4,1.443
+5,1.982
+6,2.613
+7,3.209
+8,3.885
+9,4.506
+10,5.162
+11,5.846
+12,6.548
+13,7.189
+14,7.848
+15,8.509
+16,9.194
+17,9.861
+18,10.544
+19,11.215
+20,11.840
+21,12.523
+22,13.144
+23,13.854
+24,14.537
+25,15.213
+26,15.872
+27,16.561
+28,17.234
+29,17.910
+30,18.605
+31,19.279
+32,19.908
+33,20.550
+34,21.285
+35,21.962
+36,22.648
+37,23.342
+38,24.053
+39,24.758
+40,25.447
+41,26.115
+42,26.763
+43,27.440
+44,28.125
+45,28.788
+46,29.514
+47,30.162
+48,30.820
+49,31.491
+50,32.142
+51,32.881
+52,33.584
+53,34.272
+54,34.950
+55,35.633
+56,36.310
+57,37.068
+58,37.753
+59,38.449
+60,39.192
+61,39.896
+62,40.649
+63,41.353
+64,42.075
+65,42.770
+66,43.489
+67,44.204
+68,44.919
+69,45.601
+70,46.301
+71,47.009
+72,47.664
+73,48.397
+74,49.103
+75,49.788
+76,50.518
+77,51.208
+78,51.960
+79,52.727
+80,53.490
+81,54.236
+82,54.997
+83,55.804
+84,56.663
+85,57.411
+86,58.184
+87,59.025
+88,59.866
+89,60.689
+90,61.618
+91,62.677
+92,63.822
+93,65.174
+94,66.922
+95,68.970
+96,72.322
+97,78.224
+98,128.867
+99,153.718
+100,174.892
