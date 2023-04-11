@@ -1,4 +1,4 @@
-# RAFT implementation in Java using the Actor model and WebSockets
+# RAFT using the Actor model and WebSockets
 
 This is an implementation of the RAFT consensus algorithm in Java using the Actor model and WebSockets to establish communication between nodes. This implementation is designed to handle network partitions and ensures data consistency.
 
