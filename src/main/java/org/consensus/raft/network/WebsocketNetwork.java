@@ -43,7 +43,6 @@ public class WebsocketNetwork implements Network {
         this.messageHandler = messageHandler;
 
         this.sessions = new HashMap<>();
-        // this.eventPublisher = eventPublisher;
 
         this.followerRaftNode = new HashMap<>();
 
@@ -53,15 +52,10 @@ public class WebsocketNetwork implements Network {
             followerRaftNode.put(uri, node);
         }
 
-        // establishConnection();
-
-        // ping();
     }
 
     @Override
     public void broadcast(final NetworkMessage message) {
-
-        // log.debug("sending message " + message);
 
         if (message == null) {
             return;
@@ -81,19 +75,16 @@ public class WebsocketNetwork implements Network {
         });
     }
 
-    // @EventListener(value = ApplicationReadyEvent.class)
     @Scheduled(fixedDelay = 5000)
     public void establishConnection() {
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        // List<RaftNode> nodes = config.getNodes();
 
         for (Entry<URI, Node> nodeEntry : followerRaftNode.entrySet()) {
 
             URI address = nodeEntry.getKey();
             Node raftNode = nodeEntry.getValue();
 
-            // for (String address : nodeAddress) {
             Session session = this.sessions.getOrDefault(raftNode, null);
 
             if (session == null || !session.isOpen()) {
