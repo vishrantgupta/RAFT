@@ -16,27 +16,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class RequestVoteEventListener implements BaseListener<RequestVoteEvent> {
-
-    private final Network network;
-    private final RaftConfig config;
-
-    private final ClusterState clusterState;
+public class RequestVoteEventListener extends BaseListener<RequestVoteEvent> {
 
     @Autowired
-    public RequestVoteEventListener(Network network, RaftConfig config, ClusterState clusterState) {
-        this.network = network;
-        this.config = config;
-        this.clusterState = clusterState;
+    public RequestVoteEventListener(ClusterState clusterState, Network network, RaftConfig config) {
+        super(clusterState, network, config);
     }
 
     @Override
-    public ClusterState getClusterState() {
-        return this.clusterState;
-    }
-
-    @Override
-    public void onApplicationEvent(RequestVoteEvent event) {
+    public void handleEvent(RequestVoteEvent event) {
         // another node has called for the leader election
         // this event will respond back if it votes for the new candidate or not
 
@@ -45,16 +33,14 @@ public class RequestVoteEventListener implements BaseListener<RequestVoteEvent> 
         RequestVote requestVote = entry.getKey();
         Node candidateNode = entry.getValue();
 
-        termHandler(requestVote);
-
         log.debug("handling request vote " + requestVote);
 
         boolean myVote = true;
 
-        boolean currentNodeTermIsHigher = this.clusterState.getCurrentTerm() > requestVote.getCurrentTerm();
-        boolean alreadyVotedForAnotherNode = this.clusterState.getVotedFor() != null && this.clusterState.getVotedFor() != requestVote.getCandidateId();
-        boolean currentNodeLogTermIsHigher = this.clusterState.getLastLogTerm() > requestVote.getLastLogTerm();
-        boolean currentNodeHasHigherLogEntries = this.clusterState.getLastLogTerm() == requestVote.getLastLogTerm() && this.clusterState.getLastLogIndex() > requestVote.getLastLogIndex();
+        boolean currentNodeTermIsHigher = this.getClusterState().getCurrentTerm() > requestVote.getCurrentTerm();
+        boolean alreadyVotedForAnotherNode = this.getClusterState().getVotedFor() != null && this.getClusterState().getVotedFor() != requestVote.getCandidateId();
+        boolean currentNodeLogTermIsHigher = this.getClusterState().getLastLogTerm() > requestVote.getLastLogTerm();
+        boolean currentNodeHasHigherLogEntries = this.getClusterState().getLastLogTerm() == requestVote.getLastLogTerm() && this.getClusterState().getLastLogIndex() > requestVote.getLastLogIndex();
 
         if (currentNodeTermIsHigher // current term is higher
           || alreadyVotedForAnotherNode // already voted for someone else
@@ -65,7 +51,7 @@ public class RequestVoteEventListener implements BaseListener<RequestVoteEvent> 
         }
 
         RequestVoteResponse requestVoteResponse = RequestVoteResponse.builder()
-          .currentTerm(this.clusterState.getCurrentTerm())
+          .currentTerm(this.getClusterState().getCurrentTerm())
           .voteGranted(myVote)
           .build();
 
@@ -73,10 +59,10 @@ public class RequestVoteEventListener implements BaseListener<RequestVoteEvent> 
           .requestVoteResponse(requestVoteResponse)
           .messageType(MessageType.REQUEST_VOTE_RESPONSE)
           .destination(candidateNode)
-          .source(config.getCurrentNodeConfig())
+          .source(this.getConfig().getCurrentNodeConfig())
           .build();
 
-        network.sendTo(message);
+        this.getNetwork().sendTo(message);
 
     }
 }

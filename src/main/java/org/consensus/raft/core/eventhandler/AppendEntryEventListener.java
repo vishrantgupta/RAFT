@@ -17,67 +17,54 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class AppendEntryEventListener implements BaseListener<AppendEntryEvent> {
+public class AppendEntryEventListener extends BaseListener<AppendEntryEvent> {
 
     // append entries are handled by follower
 
-    private final ClusterState clusterState;
-
-    private final Network network;
-    private final RaftConfig config;
-
     @Autowired
     public AppendEntryEventListener(ClusterState clusterState, Network network, RaftConfig config) {
-        this.clusterState = clusterState;
-        this.network = network;
-        this.config = config;
+
+        super(clusterState, network, config);
     }
 
     @Override
-    public ClusterState getClusterState() {
-        return this.clusterState;
-    }
-
-    @Override
-    public void onApplicationEvent(AppendEntryEvent event) {
+    public void handleEvent(AppendEntryEvent event) {
 
         Entry<AppendEntry, Node> entry = (Entry<AppendEntry, Node>) event.getSource();
 
         AppendEntry appendEntry = entry.getKey();
         Node leaderNode = entry.getValue();
 
-        termHandler(appendEntry);
-
-        clusterState.setLeaderActive();
+        this.getClusterState().setLeaderActive();
 
         // only follower receives the appends entry
-        if (!this.clusterState.isFollower()) {
-            throw new RaftException("only follower appends the entry, current state is " + this.clusterState.getCurrentRole().name());
+        if (!this.getClusterState().isFollower()) {
+            throw new RaftException("only follower appends the entry, current state is " + this.getClusterState().getCurrentRole().name());
         }
 
-        if (!this.clusterState.canAppendLogEntryGivenTerm(appendEntry.getCurrentTerm())) {
+        if (!this.getClusterState().canAppendLogEntryGivenTerm(appendEntry.getCurrentTerm())) {
             return;
         }
 
-        boolean success = this.clusterState.appendEntry(appendEntry);
+        boolean success = this.getClusterState().appendEntry(appendEntry);
 
         if (!success) {
             log.warn("could not append the entry " + appendEntry);
         }
 
-        this.clusterState.applyCommittedIndex(appendEntry.getLeaderCommitIndex());
+        this.getClusterState().applyCommittedIndex(appendEntry.getLeaderCommitIndex());
 
         AppendEntryResponse appendEntryResponse = AppendEntryResponse.builder()
-          .currentTerm(this.clusterState.getCurrentTerm())
+          .currentTerm(this.getClusterState().getCurrentTerm())
           .success(success)
-          .matchIndex(success ? this.clusterState.getMatchIndex() : -1)
+          .matchIndex(success ? this.getClusterState().getMatchIndex() : -1)
           .build();
 
-        network.sendTo(NetworkMessage.builder()
+        this.getNetwork().sendTo(NetworkMessage.builder()
           .appendEntryResponse(appendEntryResponse)
           .messageType(MessageType.APPEND_ENTRY_RESPONSE)
           .destination(leaderNode)
-          .source(config.getCurrentNodeConfig())
+          .source(this.getConfig().getCurrentNodeConfig())
           .build());
 
     }
