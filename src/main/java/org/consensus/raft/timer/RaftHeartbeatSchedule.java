@@ -10,6 +10,7 @@ import org.consensus.raft.log.LogEntry;
 import org.consensus.raft.network.MessageType;
 import org.consensus.raft.network.Network;
 import org.consensus.raft.network.NetworkMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,6 +23,7 @@ public class RaftHeartbeatSchedule {
     private final RaftConfig config;
     private final Network network;
 
+    @Autowired
     public RaftHeartbeatSchedule(ClusterState clusterState, RaftConfig config, Network network) {
         this.config = config;
         this.network = network;

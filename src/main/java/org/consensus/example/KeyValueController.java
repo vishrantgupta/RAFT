@@ -20,12 +20,30 @@ public class KeyValueController implements KeyValueApi {
         this.consensus = consensus;
     }
 
+    // these are basic operation; the goal is to show how to get the consensus before applying to the key-value store
+    
     @Override
-    public ResponseEntity<String> createStream(KeyValueModel body) {
+    public ResponseEntity<String> delete(KeyValueModel model) {
+        this.consensus.getConsensus(model);
+        String response = this.store.apply(model);
 
-        this.consensus.getConsensus(body);
-        this.store.apply(body);
-
-        return ResponseEntity.of(Optional.of("ok"));
+        return ResponseEntity.of(Optional.of(response));
     }
+
+    @Override
+    public ResponseEntity<String> get(KeyValueModel model) {
+        this.consensus.getConsensus(model);
+        String response = this.store.apply(model);
+
+        return ResponseEntity.of(Optional.of(response));
+    }
+
+    @Override
+    public ResponseEntity<String> put(KeyValueModel model) {
+        this.consensus.getConsensus(model);
+        String response = this.store.apply(model);
+
+        return ResponseEntity.of(Optional.of(response));
+    }
+
 }

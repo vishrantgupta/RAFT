@@ -29,8 +29,6 @@ public class AppendEntryResponseEventListener extends BaseListener<AppendEntryRe
         Node originator = entry.getValue();
         AppendEntryResponse appendEntryResponse = entry.getKey();
 
-        // log.info("handling append entry response " + appendEntryResponse + " originator " + originator);
-
         // only leader receives append entry response
         if (!this.getClusterState().isLeader()) {
             throw new RaftException("not a leader");

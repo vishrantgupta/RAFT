@@ -14,9 +14,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping(value = "/v1")
 public interface KeyValueApi {
 
-    @RequestMapping(value = "/store", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.POST)
-    ResponseEntity<String> createStream(
-      @Valid @RequestBody KeyValueModel body
-    );
+    @RequestMapping(value = "/kvstore", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.DELETE)
+    ResponseEntity<String> delete(@Valid @RequestBody KeyValueModel model);
+
+    @RequestMapping(value = "/kvstore", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.GET)
+    ResponseEntity<String> get(@Valid @RequestBody KeyValueModel model);
+
+    @RequestMapping(value = "/kvstore", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.PUT)
+    ResponseEntity<String> put(@Valid @RequestBody KeyValueModel model);
 
 }

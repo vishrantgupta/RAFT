@@ -31,11 +31,6 @@ public class WebsocketNetwork implements Network {
 
     private final MessageHandler messageHandler;
 
-    @Bean
-    public WebSocketClient webSocketClient() {
-        return new StandardWebSocketClient();
-    }
-
     @SneakyThrows
     @Autowired
     public WebsocketNetwork(RaftConfig config, MessageHandler messageHandler) {
@@ -106,5 +101,10 @@ public class WebsocketNetwork implements Network {
             log.debug("Could not send the message to " + message.getDestination());
         }
 
+    }
+
+    @Bean
+    public WebSocketClient webSocketClient() {
+        return new StandardWebSocketClient();
     }
 }

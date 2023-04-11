@@ -10,6 +10,7 @@ import org.consensus.raft.core.state.RaftRole;
 import org.consensus.raft.network.MessageType;
 import org.consensus.raft.network.Network;
 import org.consensus.raft.network.NetworkMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,6 +24,7 @@ public class ElectionSchedule {
     private final RaftConfig config;
     private final Network network;
 
+    @Autowired
     public ElectionSchedule(ClusterState clusterState, RaftConfig config, Network network) {
         this.config = config;
         this.network = network;

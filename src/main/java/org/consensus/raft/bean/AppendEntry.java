@@ -21,7 +21,6 @@ public class AppendEntry extends RaftMessage {
     private String leaderId;
 
     // index of log entry immediately preceding
-    // new ones
     @NotNull
     private int prevLogIndex;
 

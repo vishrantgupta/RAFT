@@ -13,29 +13,28 @@ public class KeyValueStore implements ApplicationCallback {
     private final Map<String, String> cache = new HashMap<>();
 
     @Override
-    public void apply(Object o) {
+    public String apply(Object o) {
 
         KeyValueModel command = (KeyValueModel) o;
 
         if (command == null || command.getCmd() == null || command.getCmd().isEmpty()) {
             log.warn("command cannot be empty");
-            return;
+            return "null";
         }
 
         switch (command.getCmd().toLowerCase()) {
             case "set" -> {
                 this.put(command.getKey(), command.getValue());
-                // System.out.println("ok");
             }
             case "get" -> {
-                log.debug(this.get(command.getKey()));
+                return this.get(command.getKey());
             }
             case "delete" -> {
-                this.delete(command.getKey());
-                // System.out.println("deleted");
+                return this.delete(command.getKey());
             }
             default -> log.error("invalid command");
         }
+        return "ok";
     }
 
     public String delete(String key) {
@@ -52,6 +51,5 @@ public class KeyValueStore implements ApplicationCallback {
 
     public void put(String key, String value) {
         cache.put(key, value);
-        // System.out.println(cache);
     }
 }

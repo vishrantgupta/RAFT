@@ -28,7 +28,6 @@ public class KeyValueModel implements Serializable {
     private String key;
 
     @JsonProperty("value")
-    @NotNull
     @Valid
     private String value;
 
