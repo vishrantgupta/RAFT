@@ -17,7 +17,7 @@ RAFT uses four main types of events for communication between nodes:
 
 ## Actor Model and WebSockets
 
-In this implementation, we use the Actor model to represent nodes in the cluster. Each node is represented by a Java object that has its own state and behavior. Nodes communicate with each other using WebSockets, which provides a low-latency, bidirectional communication channel that is well-suited for real-time applications.
+In this implementation, the Actor model is used to handle an event. Each node is represented by a Java object that has its own state and behavior. Nodes communicate with each other using WebSockets, which provides a low-latency, bidirectional communication channel that is well-suited for real-time applications.
 
 When a node wants to send a message to another node, it uses the WebSocket connection to send the message. The receiving node can then take appropriate action based on the message.
 
@@ -31,6 +31,6 @@ Please note that this implementation does not handle data persistence and snapsh
 
 ## Key-Value Store Example
 
-As an example of how to use this implementation, we have included a simple key-value store implementation in the `KeyValueController` class. The key-value store allows clients to store and retrieve key-value pairs in a distributed manner.
+As an example of how to use this implementation, I have included a simple key-value store implementation in the `KeyValueController` class. The key-value store allows clients to store and retrieve key-value pairs in a distributed manner.
 
 Clients can interact with the key-value store using a REST API that is exposed by the `KeyValueController`. The `KeyValueController` uses the RAFT implementation to ensure that all nodes have a consistent view of the key-value store.
